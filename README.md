@@ -6,3 +6,5 @@ Dataset: The dataset  ‘top2018.csv’ used for this project was obtained from 
 Installation and execution: This project contains two code files, one rmd R code file and a python file. To be executed, both files need to be downloaded along with the dataset and put into the same workspace in R and using a software to run python (ex. Google colab).
 
 This project was completed by myself, Lakshmi Pattathe a third year Data Science student. 
+
+No license applicable
