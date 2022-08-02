@@ -1,0 +1,106 @@
+---
+title: "Top 100 Analysis"
+output: html_notebook
+---
+
+This file contains the code for CP468 Final Project
+
+
+```{r}
+#packages
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("dplyr")
+install.packages("broom")
+install.packages("ggpubr")
+install.packages("rpart.plot")
+```
+
+
+```{r}
+#libraries
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+library(broom)
+library(ggpubr)
+library(rpart)
+library(rpart.plot)
+```
+```{r}
+#read in data
+DATA<-read.csv("top2018.csv")
+glimpse(DATA)
+
+#check for missing data
+sapply(DATA, function(x) sum(is.na(x)))
+```
+```{r}
+#summary statistics
+summary(DATA$danceability,na.rm=TRUE)
+summary(DATA$energy,na.rm=TRUE)
+summary(DATA$key,na.rm=TRUE)
+summary(DATA$loudness,na.rm=TRUE)
+summary(DATA$mode,na.rm=TRUE)
+summary(DATA$speechiness,na.rm=TRUE)
+summary(DATA$acousticness,na.rm=TRUE)
+summary(DATA$instrumentalness,na.rm=TRUE)
+summary(DATA$liveness,na.rm=TRUE)
+summary(DATA$valence,na.rm=TRUE)
+summary(DATA$tempo,na.rm=TRUE)
+summary(DATA$duration_ms, na.rm=TRUE)
+summary(DATA$time_signature, na.rm=TRUE)
+
+loud.energy.lm <- lm(DATA$loudness ~ DATA$energy, data = DATA)
+summary(loud.energy.lm)
+```
+```{r}
+#linear regression models
+loud.energy.g <- ggplot(DATA, aes(x=loudness, y=energy) )+geom_point() + geom_smooth(method="lm", col="black")+stat_regline_equation(label.x = -8, label.y = 1)
+loud.energy.g
+
+energy.dance.g <- ggplot(DATA, aes(x=energy, y=danceability) )+geom_point() + geom_smooth(method="lm", col="black")
+energy.dance.g
+
+loud.dance.g <- ggplot(DATA, aes(x=loudness, y=danceability) )+geom_point() + geom_smooth(method="lm", col="black")
+loud.dance.g
+
+valence.loud.g <- ggplot(DATA, aes(x=valence, y=loudness) )+geom_point() + geom_smooth(method="lm", col="black")
+valence.loud.g
+
+valence.danceability.g<- ggplot(DATA, aes(x=valence, y=danceability) )+geom_point() + geom_smooth(method="lm", col="black")
+valence.danceability.g
+```
+
+
+```{r}
+#check for outliers in best regression model
+boxplot(DATA$energy, main = "Boxplot of Energy")
+boxplot(DATA$loudness, main = "Boxplot of Loudness")
+```
+
+```{r}
+#test train split 
+testData<-DATA[1:79,]
+testData
+
+trainingData<-DATA[80:100,]
+trainingData
+
+#create decision tree
+
+
+prop.table(table(testData$artists))
+
+rpart(loud.energy.lm , data = DATA, method='anova')
+
+fit<-rpart(loud.energy.lm, data = trainingData, method = 'anova')
+rpart.plot(fit, extra = 100, box.palette = "Green")
+  
+```
+```{r}
+#determine songs that have high energy
+sortedDATA <- DATA[order(-DATA$energy, -DATA$loudness),]
+sortedDATA
+```
+
